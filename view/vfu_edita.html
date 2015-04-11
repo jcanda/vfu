@@ -1,0 +1,344 @@
+{include="header"}
+
+<script type="text/javascript">
+   $(document).ready(function () {
+      $("#b_eliminar").click(function (event) {
+         event.preventDefault();
+         if (confirm("¿Realmente desea eliminar este registro VFU ({$fsc->resultado->matricula})?"))
+            window.location.href = '{$fsc->url()}&delete={$fsc->resultado->vfu_id}';
+      });
+   });
+</script>
+
+<script type="text/javascript">
+   $(document).ready(function () {
+      document.f_edita_vfu.marca.focus();
+   });
+</script>
+
+<form name="f_edita_vfu" action="{$fsc->resultado->url()}" method="post" class="form">
+   <div class="container-fluid hidden-print" style="margin-top: 10px;">
+      <div class="row">
+         <div class="col-md-8">
+            <a href="{$fsc->resultado->url()}" class="btn btn-sm btn-default" title="Recargar la página">
+               <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+            <div class="btn-group">
+               <button type="button" class="btn btn-sm btn-default" onclick="window.print();">
+                  <span class="glyphicon glyphicon-print"></span> &nbsp; Imprimir
+               </button>
+               <a href="{$fsc->url()}&codproveedor={$fsc->resultado->codproveedor}" class="btn btn-sm btn-default">
+                  <span class="glyphicon glyphicon-user"></span> &nbsp; Más del proveedor
+               </a>
+            </div>
+         </div>
+         <div class="col-md-4 text-right">
+            <div class="btn-group">
+               <a id="b_eliminar" class="btn btn-sm btn-danger" href="#">
+                  <span class="glyphicon glyphicon-trash"></span> &nbsp; Eliminar
+               </a>
+               <button type="submit" class="btn btn-sm btn-primary" onclick="this.disabled = true;this.form.submit();">
+                  <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
+               </button>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-md-12">
+            <h2 style="margin-bottom: 0px;">
+               <a href="{$fsc->url()}">VFU</a> /
+               <a href="{$fsc->resultado->proveedor_url()}">{$fsc->resultado->nombre_proveedor}</a> /
+               {$fsc->resultado->vfu_id}
+            </h2>
+            <p>Fecha entrada: {$fsc->resultado->f_entrada}</p>
+         </div>
+      </div>
+       
+   </div>
+
+   <div role="tabpanel" class="hidden-print">
+          <ul id="tabs" class="nav nav-tabs" role="tablist">
+               <li id='tab_datos' class="active">
+                  <a href="#datos" role="tab" data-toggle="tab">
+                     <span class="glyphicon glyphicon-wrench"></span> Datos del Vehiculo
+                  </a>
+               </li>
+               <li id='tab_detalles'>
+                  <a href="#detalles" role="tab" data-toggle="tab">
+                     <span class="glyphicon glyphicon-comment"></span>
+                     Datos Titular
+                  </a>
+               </li>
+               <li id='tab_observaciones'>
+                  <a href="#observaciones" role="tab" data-toggle="tab">
+                     <span class="glyphicon glyphicon-eye-open"></span> Observaciones
+                  </a>
+               </li>
+            </ul>
+      <div class="tab-content">
+         <div role="tabpanel" class="tab-pane active" id="datos">
+            <div class="container-fluid">
+               <div class="row">
+                  <div class="col-md-3">
+                     <div class="form-group">
+                        Marca:
+                        <input class="form-control" type="text" name="marca" value="{$fsc->resultado->marca}"/>
+                     </div>
+                  </div>
+                  <div class="col-md-3">
+                     <div class="form-group">
+                        Modelo:
+                        <input class="form-control" type="text" name="modelo" value="{$fsc->resultado->modelo}"/>
+                     </div>
+                  </div>
+                  <div class="col-md-3">
+                     <div class="form-group">
+                         Tipo:
+                        <select name="vfu_tipo" class="form-control">
+                           {loop="fsc->listar_tipos()"}
+                           {if="$value['id_tipo'] == $fsc->resultado->vfu_tipo"}
+                           <option value="{$value['id_tipo']}" selected>{$value['nombre_tipo']}</option>
+                           {else}
+                           <option value="{$value['id_tipo']}">{$value['nombre_tipo']}</option>
+                           {/if}
+                           {/loop}
+                        </select>
+                     </div>
+                  </div>  
+                  <div class="col-md-3">
+                     <div class="form-group">
+                        Color:
+                        <input class="form-control" type="text" name="color" value="{$fsc->resultado->color}"/>
+                     </div>
+                  </div>                     
+               </div>
+                <!--/Segunda columna-->
+               <div class="row">
+                  <div class="col-md-3">
+                     <div class="form-group">
+                        Matrícula:*
+                        <input class="form-control" type="text" name="matricula" value="{$fsc->resultado->matricula}"/>
+                     </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div class="form-group">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                          Fecha Matriculación:
+                        <input class="form-control datepicker" type="text" name="f_matriculacion" value="{$fsc->resultado->f_matriculacion}"/>
+                     </div>
+                  </div>
+                  <div class="col-md-3">
+                     <div class="form-group">
+                        <span class="glyphicon glyphicon-globe"></span>
+                        Pais:
+                        <input class="form-control" type="text" name="pais_matriculacion" value="{$fsc->resultado->pais_matriculacion}"/>
+                     </div>
+                  </div>  
+                  <div class="col-md-3">
+                     <div class="form-group">
+                         <span class="glyphicon glyphicon-tag"></span>
+                        Bastidor:
+                        <input class="form-control" type="text" name="bastidor" value="{$fsc->resultado->bastidor}"/>
+                     </div>
+                  </div>                    
+               </div>
+                <!--/Tercera columna-->
+               <div class="row">
+                  <div class="col-md-3">
+                     <div class="form-group">
+                        Consumo:
+                        <select name="consumo" class="form-control">
+                           {loop="fsc->listar_consumos()"}
+                           {if="$value['id_consumo'] == $fsc->resultado->consumo"}
+                           <option value="{$value['id_consumo']}" selected>{$value['nombre_consumo']}</option>
+                           {else}
+                           <option value="{$value['id_consumo']}">{$value['nombre_consumo']}</option>
+                           {/if}
+                           {/loop}                            
+                        </select>
+                     </div>
+                  </div> 
+                   
+                  <div class="col-md-3">
+                      <div class="form-group">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                          Fecha Baja:
+                        <input class="form-control datepicker" type="text" name="f_baja" value="{$fsc->resultado->f_baja}"/>
+                     </div>
+                  </div>
+                   
+                  <div class="col-md-3">
+                     <div class="form-group">
+                         <span class="glyphicon glyphicon-paperclip"></span>
+                        Documentos:
+                        <select name="documentacion" class="form-control">
+                           {loop="fsc->listar_documentos()"}
+                           {if="$value['id_documento'] == $fsc->resultado->documentacion"}
+                           <option value="{$value['id_documento']}" selected>{$value['nombre_documento']}</option>
+                           {else}
+                           <option value="{$value['id_documento']}">{$value['nombre_documento']}</option>
+                           {/if}
+                           {/loop}                             
+                        </select>
+                     </div>
+                  </div>   
+                   
+                  <div class="col-md-3">
+                     <div class="form-group">
+                         <span class="glyphicon glyphicon-tasks"></span>
+                        N certificado:
+                        <input class="form-control" type="text" name="ncertificado" value="{$fsc->resultado->ncertificado}" disabled="disabled"/>
+                     </div>
+                  </div>                   
+               </div>
+                <!--/Cuarta columna-->
+               <div class="row">
+                  <div class="col-md-3">
+                     <div class="form-group">
+                        Estado Vehiculo:
+                        <select name="estado" class="form-control">
+                            {loop="fsc->listar_estados()"}
+                           {if="$value['id_estado'] == $fsc->resultado->estado"}
+                           <option value="{$value['id_estado']}" selected>{$value['nombre_estado']}</option>
+                           {else}
+                           <option value="{$value['id_estado']}">{$value['nombre_estado']}</option>
+                           {/if}
+                           {/loop}                            
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div class="form-group">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                          Fecha Entrada:
+                        <input class="form-control datepicker" type="text" name="f_entrada" value="{$fsc->resultado->f_entrada}"/>
+                     </div>
+                  </div>
+                   
+                   <div class="col-lg-3">
+                       
+                       En Stock:                       
+                       <div class="checkbox">
+                           <label>
+                               <input type="checkbox" name="instock" value="TRUE" {if condition="$fsc->resultado->instock"} checked="checked" {/if}/>DISPONIBLE (Si/No)
+                           </label>
+                       </div>
+                   </div><!-- /.col-lg-3 --> 
+                   
+                   <div class="col-lg-3">
+                       
+                       Damos de Baja:                        
+                       <div class="checkbox">
+                           <label>
+                               <input type="checkbox" name="baja_nos" value="TRUE" {if condition="$fsc->resultado->baja_nos"} checked="checked"{/if}/>NOSOTROS DAMOS BAJA (Si/No)
+                           </label>
+                       </div>
+                   </div>
+               </div>
+                <!--/Quinta columna-->
+                <div class="row">
+                   <div class="col-md-6">
+                     <div class="form-group">
+                        Otros Datos:
+                        <textarea class="form-control" name="otros_datos" rows="4">{$fsc->resultado->otros_datos}</textarea>
+                     </div>
+                  </div>                   
+                </div>                
+            </div>
+         </div>
+         <div role="tabpanel" class="tab-pane" id="detalles">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            Titular:
+                            <input class="form-control" type="text" name="nombre" value="{$fsc->resultado->nombre_proveedor}" disabled="disabled"/>
+                        </div>
+                    </div>                
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            NIF/CIF:
+                            <input class="form-control" type="text" name="cifnif" value="{$fsc->resultado->cifnif_proveedor}" disabled="disabled"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            Provincia:
+                            <input class="form-control" type="text" name="provincia" value="{$fsc->resultado->provincia}" disabled="disabled"/>
+                        </div>
+                    </div> 
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            Dirección:
+                            <input class="form-control" type="text" name="direccion" value="{$fsc->resultado->direccion}" disabled="disabled"/>
+                        </div>
+                    </div>                
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            Código Postal:
+                            <input class="form-control" type="text" name="codpostal" value="{$fsc->resultado->codpostal}" disabled="disabled"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            Ciudad:
+                            <input class="form-control" type="text" name="ciudad" value="{$fsc->resultado->ciudad}" disabled="disabled"/>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            Teléfono1:
+                            <input class="form-control" type="text" name="telefono1" value="{$fsc->resultado->telefono1_proveedor}" disabled="disabled"/>
+                        </div>
+                    </div> 
+
+                </div>
+                <div class="row">
+                    <div class="panel panel-primary" id="panel_representante">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Datos Representante:</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    Representante:
+                                    <input class="form-control" type="text" name="representante" value="{$fsc->resultado->representante}"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    CIF/NIF:
+                                    <input class="form-control" type="text" name="r_nif" value="{$fsc->resultado->r_nif}"/>
+                                </div>
+                            </div> 
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    Concepto:
+                                    <input class="form-control" type="text" name="r_concepto" value="{$fsc->resultado->r_concepto}"/>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div> 
+         </div>
+         <div role="tabpanel" class="tab-pane" id="observaciones">
+            <div class="form-group" style="padding: 10px;">
+               Observaciones:
+               <textarea class="form-control" name="observaciones_vfu" rows="9">{$fsc->resultado->observaciones_vfu}</textarea>
+            </div>
+         </div>
+      </div>
+   </div>
+</form>
+
+<div class="visible-print">
+
+</div>
+
+
+{include="footer"}

@@ -1,0 +1,58 @@
+{include="header"}
+
+<div class="panel-group" id="accordion" style="margin: 5px;">
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+         <h3 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{$counter}">Enlaces DGT</a>
+         </h3>
+      </div>
+      <div id="collapse_{$counter}" class="panel-collapse collapse{if condition="$counter==0"} in{/if}">
+         <div class="panel-body">
+            <div class="container-fluid">
+               <div class="row col-lg-offset-4">
+                  <div class="col-lg-5 col-md-5 col-sm-5">
+                      <span class="glyphicon glyphicon-share" aria-hidden="true"></span>
+                     <a href="https://aplcr.dgt.es/WEB_dgtBateveConsulta/index.jsf" target="_blank">Consulta (DGT)</a>
+                  </div>
+                  <div class="col-lg-5 col-md-5 col-sm-5">
+                      <span class="glyphicon glyphicon-share" aria-hidden="true"></span>
+                     <a href="https://aplcr.dgt.es/WEB_dgtBateveBaja/index.jsf" target="_blank">Bajas (DGT)</a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="panel panel-default">
+      <div class="panel-heading">
+         <h3 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{$counter}">Documentos Plantillas PDF</a>
+         </h3>
+      </div>
+      <div id="collapse_{$counter}" class="panel-collapse collapse{if condition="$counter==0"} in{/if}">
+         <div class="panel-body">
+            <div class="container-fluid">
+               <div class="row col-lg-offset-2">
+                  <div class="col-lg-3 col-md-3 col-sm-3">
+                      <a href="plugins/vfu/view/downloads/modelo_autorizacion_bajas.pdf" target="_blank"><img src="plugins/vfu/view/downloads/pdflogo.gif" />&nbsp;Autorización Bajas (pdf)</a>
+                  </div>                   
+                  <div class="col-lg-3 col-md-3 col-sm-3">
+                     <a href="plugins/vfu/view/downloads/solicitud_baja_vfu.pdf" target="_blank"><img src="plugins/vfu/view/downloads/pdflogo.gif" />&nbsp;Solicitud (pdf)</a>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-3">
+                     <a href="plugins/vfu/view/downloads/certificado_destruccion_vfu.pdf" target="_blank"><img src="plugins/vfu/view/downloads/pdflogo.gif" />&nbsp;Certificado (pdf)</a>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-3">
+                      <a href="plugins/vfu/view/downloads/autorizacion_vfu.pdf" target="_blank"><img src="plugins/vfu/view/downloads/pdflogo.gif" />&nbsp;Autorización (pdf)</a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+    
+</div>
+{include="footer"}
