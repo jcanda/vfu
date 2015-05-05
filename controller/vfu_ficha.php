@@ -12,14 +12,14 @@
  * @author Zapasoft
  */
 require_model('agente.php');
-require_model('proveedor.php');
+require_model('vfu_titulare.php');
 require_model('pais.php');
 require_model('registro_vfu.php');
 
 class vfu_ficha extends fs_controller {
 
     public $agente;
-    public $proveedor;
+    public $titular;
     public $registro_vfu;
     public $busqueda;
     public $resultado;
@@ -41,30 +41,33 @@ class vfu_ficha extends fs_controller {
         //$this->show_fs_toolbar = FALSE;
 
         $this->agente = FALSE;
-        $this->proveedor = new proveedor();
+        $this->titular = new vfu_titulare();
         $this->registro_vfu = new registro_vfu();
         $this->pais = new pais();
 
         $this->busqueda = array(
-            'contenido' => '',
             'desde' => '',
             'hasta' => '',
-            'estado' => ''
+            'filtro_tipo' => '',
+            'orden' => 'vfu_id'
         );
 
+        /// ¿El usuario tiene permiso para eliminar en esta página?
+        $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
+      
         //Realizamos un anidado segun los GET que recibamos
         // Primero para buscar proveedor:
-        if (isset($_REQUEST['buscar_proveedor'])) {
+        if (isset($_REQUEST['buscar_titular'])) {
             /// desactivamos la plantilla HTML
             $this->template = FALSE;
 
             $json = array();
-            foreach ($this->proveedor->search($_REQUEST['buscar_proveedor']) as $prove) {
-                $json[] = array('value' => $prove->nombre, 'data' => $prove->codproveedor);
+            foreach ($this->titular->search($_REQUEST['buscar_titular']) as $titu) {
+                $json[] = array('value' => $titu->nombre, 'data' => $titu->codtitular_vfu);
             }
 
             header('Content-Type: application/json');
-            echo json_encode(array('query' => $_REQUEST['buscar_proveedor'], 'suggestions' => $json));
+            echo json_encode(array('query' => $_REQUEST['buscar_titular'], 'suggestions' => $json));
         }
         //Para editar un vfu
         else if (isset($_GET['id'])) {
@@ -72,51 +75,47 @@ class vfu_ficha extends fs_controller {
             $this->page->title = "Edita VFU: " . $_GET['id'];
             $this->edita_vfu();
         }
+        //Para listar todos los vfu de un titular en concreto
+        else if (isset($_GET['codtitular_vfu']) AND !isset($_GET['opcion'])) {
+            $this->template = "vfu_ficha";
+            $this->page->title = "VFU TITULAR: " . $_GET['codtitular_vfu'];
+            $this->resultado = $this->registro_vfu->get_all_titular($_GET['codtitular_vfu']);
+        }        
         //PAra añadir VFU nuevo
         else if (isset($_GET['opcion'])) {
             if ($_GET['opcion'] == "nuevovfu") {
                 $this->page->title = "Nueva BAJA Vehiculo";
 
-                //Si ya existe proveedor entro aqui
-                if (isset($_GET['codproveedor']) AND !empty($_GET['codproveedor'])) {
+                //Si ya existe titular entro aqui
+                if (isset($_GET['codtitular_vfu']) AND !empty($_GET['codtitular_vfu'])) {
+                    
                     if (isset($_POST['matricula']) AND !empty($_POST['matricula'])) { /// editar
-                        //si recibe matricula desde plantilla de AGREGA_VFU se GRABA y luego LISTO TODO
-                        $proveedor = $this->proveedor->get($_GET['codproveedor']);
-                        $proveedor->nombre = $_POST['nombre_proveedor'];
-                        $proveedor->telefono1 = $_POST['telefono1'];
-                        $proveedor->cifnif = $_POST['cifnif'];
-
-                        if ($proveedor->save()) {
-                            $this->new_message('Proveedor actualizado correctamente.');
-                        } else
-                            $this->new_error_msg('Error al guardar los datos del proveedor.');
-
-                        $this->proveedor = $proveedor;
-                        $vfu = $this->agrega_vfu();
-                        
-                        //$this->page->title = "Nueva VFU incluida: " . $vfu;
-                        //$this->resultado = $this->registro_vfu->get($vfu);
-                        //$this->template = "vfu_edita";
+                        //entra si ya estan todos los datos completados en AGREGA_VFU -> GRABA titular y vfu -> luego LISTO TODO
+                        if ($this->edita_titular($this->titular->get($_GET['codtitular_vfu']))) 
+                            $this->agrega_vfu();
                         
                         $this->resultado = $this->registro_vfu->all();
                         $this->template = "vfu_ficha";
-                        
                     }
                     else {
-                        //$this->resultado = $this->proveedor->get($_GET['codproveedor']);
-                        $this->resultado = $this->registro_vfu->getproduct_all($_GET['codproveedor']);
+                        //entra aqui despues de seleccionar al titular, pero aun no se completaron los datos en AGREGA_VFU
+                        $this->resultado = $this->registro_vfu->get_titular($_GET['codtitular_vfu']);
                         $this->template = "vfu_agrega";
                     }
                 }
-                //NUEVO proveedor y pasamos ID para crear el nuevo VFU
-                elseif (!isset($_GET['codproveedor'])) {
-                    $proveedor_id = $this->nuevo_proveedor();
-                    $proveedor = $this->registro_vfu->getproduct_all($proveedor_id);
-                    $this->proveedor = $proveedor;
-                    $this->resultado = $proveedor;
-                    $this->template = "vfu_agrega";
+                
+                //NUEVO titular y pasamos ID para crear el nuevo VFU
+                elseif (!isset($_GET['codtitular_vfu'])) {
+                    if($titular_id = $this->nuevo_titular()){
+                        // consulto el nuevo titular y lo cargo desde el modelo de vfu
+                        $this->resultado = $this->registro_vfu->get_titular($titular_id);
+                        $this->template = "vfu_agrega";                        
+                    }else{
+                        $this->resultado = $this->registro_vfu->all();
+                        $this->template = "vfu_ficha";                        
+                    }
                 } else {
-                    $this->new_error_msg('Proveedor no encontrado.');
+                    $this->new_error_msg('Titular no creado.');
                     $this->resultado = $this->registro_vfu->all();
                     $this->template = "vfu_ficha";
                 }
@@ -127,11 +126,11 @@ class vfu_ficha extends fs_controller {
             $vfu = $this->registro_vfu->get($_GET['delete']);
             if ($vfu) {
                 if ($vfu->delete()) {
-                    $this->new_message('Registro eliminado correctamente.');
+                    $this->new_message('Registro VFU eliminado correctamente.');
                 } else
-                    $this->new_error_msg('Imposible eliminar el registro.');
+                    $this->new_error_msg('Imposible eliminar el registro VFU.');
             } else
-                $this->new_error_msg('Registro no encontrado.');
+                $this->new_error_msg('Registro VFU no encontrado.');
 
             $this->offset = 0;
             if (isset($_GET['offset']))
@@ -140,6 +139,17 @@ class vfu_ficha extends fs_controller {
             $this->resultado = $this->registro_vfu->all($this->offset);
             $this->template = "vfu_ficha";
         }
+        //Para BUSCAR baja O FILTRAR
+        else if (isset($_POST['query'])){
+            
+            /// esto es para una búsqueda
+            $this->busqueda['desde'] = $_POST['desde'];
+            $this->busqueda['hasta'] = $_POST['hasta'];
+            $this->busqueda['filtro_tipo'] = $_POST['filtro_tipo'];
+             
+            $this->resultado = $this->registro_vfu->search($this->query, $this->busqueda['desde'], $this->busqueda['hasta'], $this->busqueda['filtro_tipo'], $this->busqueda['orden']);
+            $this->template = "vfu_ficha";
+        }        
         //Para listar todo
         else {
             $this->offset = 0;
@@ -151,44 +161,62 @@ class vfu_ficha extends fs_controller {
         }
     }
 
-    public function nuevo_proveedor() {
+    private function nuevo_titular() {
         //----------------------------------------------
-        // agrega un proveedor nuevo y retorna el id
+        // agrega un titular nuevo y retorna el id
         //----------------------------------------------
 
         if (isset($_POST['nombre'])) {
-            $proveedor = new proveedor();
-            $proveedor->codproveedor = $proveedor->get_new_codigo();
-            $proveedor->nombre = $_POST['nombre'];
-            $proveedor->nombrecomercial = $_POST['nombre'];
-            $proveedor->cifnif = $_POST['cifnif'];
-            $proveedor->telefono1 = $_POST['telefono1'];
-            $proveedor->telefono2 = $_POST['telefono2'];
-            $proveedor->codserie = $this->empresa->codserie;
+            $titular = new vfu_titulare();
+            //$titular->codtitular_vfu = $titular->get_new_codigo();
+            $titular->nombre = $_POST['nombre'];
+            $titular->email = $_POST['email'];
+            $titular->telefono1 = $_POST['telefono1'];
+            $titular->cifnif = $_POST['cifnif'];
+            $titular->direccion = $_POST['direccion'];
+            $titular->codpostal = $_POST['codpostal'];
+            $titular->ciudad = $_POST['ciudad'];
 
-            if ($proveedor->save()) {
-                $dirproveedor = new direccion_proveedor();
-                $dirproveedor->codproveedor = $proveedor->codproveedor;
-                $dirproveedor->codpais = $_POST['pais'];
-                $dirproveedor->provincia = $_POST['provincia'];
-                $dirproveedor->ciudad = $_POST['ciudad'];
-                $dirproveedor->codpostal = $_POST['codpostal'];
-                $dirproveedor->direccion = $_POST['direccion'];
-                $dirproveedor->descripcion = 'Principal';
-                if ($dirproveedor->save()) {
-                    $this->new_message('Proveedor agregado correctamente.');
-                } else
-                    $this->new_error_msg("¡Imposible guardar la dirección del Proveedor!");
-            } else
-                $this->new_error_msg('Error al agregar los datos del proveedor.');
+            if ($titular->save()) {
+                $this->new_message('Titular creado correctamente. '.$titular->codtitular_vfu);
+                return $titular->codtitular_vfu;
+            } else {
+                $this->new_error_msg('Error al guardar los datos del titular...');
+                return FALSE;
+            }
+        }else
+            $this->new_error_msg('Error al agregar los datos del titular: faltan datos...');
+    }
+    
+    private function edita_titular($titular) {
+        //----------------------------------------------
+        // edita un titular tanto en la edicion como en nuevo de un VFU nuevo
+        //----------------------------------------------        
+        if ($titular) {
+            $titular->nombre = $_POST['nombre'];
+            $titular->email = $_POST['email'];
+            $titular->telefono1 = $_POST['telefono1'];
+            $titular->cifnif = $_POST['cifnif'];
+            $titular->direccion = $_POST['direccion'];
+            $titular->codpostal = $_POST['codpostal'];
+            $titular->ciudad = $_POST['ciudad'];
+
+            if ($titular->save()) {
+                $this->new_message('Titular modificado correctamente.');
+                return $titular;
+            } else {
+                $this->new_error_msg('Error al guardar los datos del titular.');
+                return FALSE;
+            }
+        }else{
+            $this->new_error_msg('Error titular no encontrado o seleccionado.');
+            return FALSE;            
         }
-
-        return $proveedor->codproveedor;
     }
 
-    public function agrega_vfu() {
-        if ($this->proveedor) {
-            $this->registro_vfu->codproveedor = $_GET['codproveedor'];
+    private function agrega_vfu() {
+        if ($this->titular) {
+            $this->registro_vfu->codtitular_vfu = $_GET['codtitular_vfu'];
             $this->registro_vfu->marca = $_POST['marca'];
             $this->registro_vfu->modelo = $_POST['modelo'];
             $this->registro_vfu->vfu_tipo = $_POST['vfu_tipo'];
@@ -232,12 +260,12 @@ class vfu_ficha extends fs_controller {
                 return FALSE;
             }
         } else {
-            $this->new_error_msg('Proveedor no encontrado.');
+            $this->new_error_msg('Titular no encontrado.');
             return FALSE;
         }
     }
 
-    public function edita_vfu() {
+    private function edita_vfu() {
         $this->resultado = $this->registro_vfu->get($_GET['id']);
 
         if ($this->resultado) {
@@ -245,18 +273,8 @@ class vfu_ficha extends fs_controller {
         }
 
         if ($this->resultado AND isset($_POST['matricula']) AND !empty($_POST['matricula'])) {
-            $proveedor = $this->proveedor->get($this->resultado->codproveedor);
-            if ($proveedor AND isset($_POST['nombre'])) {
-                $proveedor->nombre = $_POST['nombre'];
-                $proveedor->nombrecomercial = $_POST['nombre'];
-                $proveedor->telefono1 = $_POST['telefono1'];
-                $proveedor->cifnif = $_POST['cifnif'];
 
-                if ($proveedor->save()) {
-                    $this->new_message('Proveedor modificado correctamente.');
-                } else
-                    $this->new_error_msg('Error al guardar los datos del proveedor.');
-            }
+            $this->edita_titular($this->titular->get($this->resultado->codtitular_vfu));
 
             $this->resultado->marca = $_POST['marca'];
             $this->resultado->modelo = $_POST['modelo'];
@@ -289,6 +307,7 @@ class vfu_ficha extends fs_controller {
 
             if ($this->resultado->save()) {
                 $this->new_message('Datos del VFU guardados correctamente.');
+                $this->resultado = $this->registro_vfu->get($_GET['id']);
             } else {
                 $this->new_error_msg('Imposible guardar los datos del VFU.');
             }

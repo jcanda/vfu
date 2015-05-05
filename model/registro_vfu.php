@@ -22,7 +22,7 @@ class registro_vfu extends fs_model
    public $bastidor;
    public $estado;
    public $otros_datos;
-   public $codproveedor;
+   public $codtitular_vfu;
    public $representante;
    public $r_nif;
    public $r_concepto;
@@ -33,14 +33,14 @@ class registro_vfu extends fs_model
    public $baja_nos;
    
    /// Estos datos los usas, pero no los guardas en la base de datos
-   public $nombre_proveedor;
-   public $telefono1_proveedor;
-   public $cifnif_proveedor;
+   public $nombre_titular;
+   public $telefono1_titular;
+   public $cifnif_titular;
    
-   public $provincia;
    public $ciudad;
    public $direccion;
    public $codpostal;
+   public $email;
 
 
    public function __construct($s = FALSE)
@@ -73,7 +73,7 @@ class registro_vfu extends fs_model
          $this->bastidor = $s['bastidor'];
          $this->estado = intval($s['estado']);
          $this->otros_datos = $s['otros_datos'];
-         $this->codproveedor = $s['codproveedor'];
+         $this->codtitular_vfu = $s['codtitular_vfu'];
          $this->representante = $s['representante'];      
          $this->r_nif = $s['r_nif'];
          $this->r_concepto = $s['r_concepto'];
@@ -83,14 +83,13 @@ class registro_vfu extends fs_model
          $this->ncertificado = $s['ncertificado'];
          $this->baja_nos = $this->str2bool($s['baja_nos']);
          
-         $this->nombre_proveedor = $s['nombre'];
-         $this->telefono1_proveedor = $s['telefono1'];
-         $this->cifnif_proveedor = $s['cifnif'];
-         
-         $this->provincia = $s['provincia'];
+         $this->nombre_titular = $s['nombre'];
+         $this->telefono1_titular = $s['telefono1'];
+         $this->cifnif_titular = $s['cifnif'];
          $this->ciudad = $s['ciudad'];
          $this->codpostal = $s['codpostal'];
          $this->direccion = $s['direccion'];
+         $this->email = $s['email'];
          
       }
       else
@@ -109,7 +108,7 @@ class registro_vfu extends fs_model
          $this->bastidor = '';
          $this->estado = 0;
          $this->otros_datos = '';
-         $this->codproveedor = NULL;
+         $this->codtitular_vfu = NULL;
          $this->representante = '';     
          $this->r_nif = '';
          $this->r_concepto = '';
@@ -119,11 +118,10 @@ class registro_vfu extends fs_model
          $this->ncertificado = '';
          $this->baja_nos = 1;
       
-         $this->nombre_proveedor = '';
-         $this->telefono1_proveedor = '';
-         $this->cifnif_proveedor = '';
-         
-         $this->provincia = '';
+         $this->nombre_titular = '';
+         $this->telefono1_titular = '';
+         $this->cifnif_titular = '';
+         $this->email = '';
          $this->ciudad = '';
          $this->codpostal = '';
          $this->direccion = '';         
@@ -216,22 +214,13 @@ class registro_vfu extends fs_model
       {
          return 'index.php?page=vfu_ficha&id='.$this->vfu_id;
       }
-   }
-   
-   public function proveedor_url()
-   {
-      if( is_null($this->codproveedor) )
-         return "index.php?page=compras_proveedores";
-      else
-         return "index.php?page=compras_proveedores&cod=".$this->codproveedor;
-   }   
+   }  
    
    public function get($id)
    {
       $sql = "SELECT * FROM
-         (vfu INNER JOIN proveedores ON vfu.codproveedor = proveedores.codproveedor)
-         INNER JOIN dirproveedores ON vfu.codproveedor = dirproveedores.codproveedor
-         WHERE dirproveedores.direccionppal = 1 AND vfu.vfu_id = ".$this->var2str($id).";";
+         (vfu INNER JOIN vfu_titulares ON vfu.codtitular_vfu = vfu_titulares.codtitular_vfu)
+         WHERE vfu.vfu_id = ".$this->var2str($id).";";
       
       $data = $this->db->select($sql);
       if($data)
@@ -240,17 +229,32 @@ class registro_vfu extends fs_model
          return FALSE;
    }
 
-   public function getproduct_all($id)
+   public function get_all_titular($id)
    {
       $sql = "SELECT * FROM
-         (proveedores INNER JOIN dirproveedores ON proveedores.codproveedor = dirproveedores.codproveedor)
-         WHERE dirproveedores.direccionppal = 1 AND proveedores.codproveedor = ".$this->var2str($id).";";
+         (vfu INNER JOIN vfu_titulares ON vfu.codtitular_vfu = vfu_titulares.codtitular_vfu)
+         WHERE vfu.codtitular_vfu = ".$this->var2str($id)." ORDER BY vfu.vfu_id DESC";
       
+      $data = $this->db->select($sql.";");
+      if($data)
+      {
+         foreach($data as $d)
+            $vfulist[] = new registro_vfu($d);
+      }
+      
+      return $vfulist;
+   }
+
+   public function get_titular($id)
+   {
+      $sql = "SELECT * FROM vfu_titulares WHERE codtitular_vfu = " . $this->var2str($id) . ";";
+        
       $data = $this->db->select($sql);
+      
       if($data)
          return new registro_vfu($data[0]);
       else
-         return FALSE;
+         return FALSE;         
    }
    
    public function exists()
@@ -304,7 +308,7 @@ class registro_vfu extends fs_model
                f_entrada = ".$this->var2str($this->f_entrada).", pais_matriculacion = ".$this->var2str($this->pais_matriculacion).",
                consumo = ".$this->var2str($this->consumo).", bastidor = ".$this->var2str($this->bastidor).",
                estado = ".$this->var2str($this->estado).", otros_datos = ".$this->var2str($this->otros_datos).",
-               codproveedor = ".$this->var2str($this->codproveedor).", representante = ".$this->var2str($this->representante).",
+               codtitular_vfu = ".$this->var2str($this->codtitular_vfu).", representante = ".$this->var2str($this->representante).",
                r_nif = ".$this->var2str($this->r_nif).", r_concepto = ".$this->var2str($this->r_concepto).",
                documentacion = ".$this->var2str($this->documentacion).", instock = ".$this->var2str($this->instock).",
                observaciones_vfu = ".$this->var2str($this->observaciones_vfu).", ncertificado = ".$this->var2str($this->ncertificado).",
@@ -315,13 +319,13 @@ class registro_vfu extends fs_model
          else
          {
             $sql = "INSERT INTO vfu (marca, modelo, vfu_tipo, color, matricula, f_matriculacion, f_baja, f_entrada, pais_matriculacion,
-               consumo, bastidor, estado, otros_datos, codproveedor, representante, r_nif, r_concepto, documentacion, instock, 
+               consumo, bastidor, estado, otros_datos, codtitular_vfu, representante, r_nif, r_concepto, documentacion, instock, 
                observaciones_vfu, ncertificado, baja_nos) VALUES (".$this->var2str($this->marca).",
                ".$this->var2str($this->modelo).",".$this->var2str($this->vfu_tipo).",".$this->var2str($this->color).",
                ".$this->var2str($this->matricula).",".$this->var2str($this->f_matriculacion).",
                ".$this->var2str($this->f_baja).",".$this->var2str($this->f_entrada).",".$this->var2str($this->pais_matriculacion).",
                ".$this->var2str($this->consumo).",".$this->var2str($this->bastidor).",".$this->var2str($this->estado).",
-               ".$this->var2str($this->otros_datos).",".$this->var2str($this->codproveedor).",".$this->var2str($this->representante).",
+               ".$this->var2str($this->otros_datos).",".$this->var2str($this->codtitular_vfu).",".$this->var2str($this->representante).",
                ".$this->var2str($this->r_nif).",".$this->var2str($this->r_concepto).",".$this->var2str($this->documentacion).",
                ".$this->var2str($this->instock).",".$this->var2str($this->observaciones_vfu).",".$this->var2str($this->ncertificado).",
                ".$this->var2str($this->baja_nos).");";
@@ -349,7 +353,7 @@ class registro_vfu extends fs_model
       $vfulist = array();
 
       $sql = "SELECT * FROM
-         vfu INNER JOIN proveedores ON vfu.codproveedor = proveedores.codproveedor
+         vfu INNER JOIN vfu_titulares ON vfu.codtitular_vfu = vfu_titulares.codtitular_vfu
          WHERE vfu.vfu_id != 0 ORDER BY vfu_id DESC";
       
       $data = $this->db->select_limit($sql, $limit, $offset);
@@ -362,41 +366,63 @@ class registro_vfu extends fs_model
       return $vfulist;
    }
    
-   public function search($buscar='', $desde='', $hasta='', $stock='todos',$orden="ncertificado")
+   public function search($buscar='', $desde='', $hasta='', $filtro_tipo='', $orden='vfu_id', $offset=0)
    {
       $entidadlist = array();
+      $buscar = strtolower( trim($buscar) );
       
-      $sql = "SELECT *
-         FROM `vfu`
-         WHERE vfu_id > 0";
+      $sql = "SELECT * FROM
+        vfu INNER JOIN vfu_titulares ON vfu.codtitular_vfu = vfu_titulares.codtitular_vfu
+        WHERE vfu.vfu_id != 0 ";
       
       //Primero compruebo si hay texto a buscar
       if($buscar != '')
       {
-         $sql .= " AND ((upper(matricula) LIKE upper('%".$buscar."%')) OR (lower(otros_datos) LIKE lower('%".$buscar."%'))
-            OR (lower(observaciones_vfu) LIKE lower('%".$buscar."%')))";
+          if( is_numeric($buscar) ){
+                $sql .= " AND (vfu.ncertificado = ". $this->var2str($buscar) ." OR (lower(vfu.otros_datos) LIKE lower('%".$buscar."%'))
+                OR (lower(vfu.modelo) LIKE lower('%".$buscar."%')) OR (lower(vfu_titulares.cifnif) LIKE lower('%".$buscar."%'))
+                OR (lower(vfu.matricula) LIKE upper('%".$buscar."%')))";
+          }else{
+                $sql .= " AND ((upper(vfu.matricula) LIKE upper('%".$buscar."%')) OR (lower(vfu.otros_datos) LIKE lower('%".$buscar."%'))
+                OR (lower(vfu.observaciones_vfu) LIKE lower('%".$buscar."%')))";              
+          }
       }
       
-      //Segundo compruebo el parametro stock para filtrar
-      if($stock != "todos" AND $stock == "1")
+      if($desde != '')
       {
-          //Si el parametro es 
-          $sql .= " AND instock = ".$stock;
+         $sql .= " AND vfu.f_entrada >= ".$this->var2str($desde);
       }
-
-      $sql.= " ORDER BY ".$orden." ASC ";
       
-      $data = $this->db->select($sql.";");
+      if($hasta != '')
+      {
+         $sql .= " AND vfu.f_entrada <= ".$this->var2str($hasta);
+      }      
+      
+      //Segundo compruebo el parametro para filtrar
+      if($filtro_tipo != '')
+      {
+          if($filtro_tipo == 'instock')
+            $sql .= " AND vfu.instock = 1";
+          elseif ($filtro_tipo == 'nosotros') 
+            $sql .= " AND vfu.baja_nos = 1";
+          elseif ($filtro_tipo == 'pendientes')
+            $sql .= " AND vfu.documentacion = 3";  
+      }      
+      
+      //Tercero compruebo el orden
+      $sql.= " ORDER BY ".$orden." DESC ";
+      
+      $data = $this->db->select_limit($sql, FS_ITEM_LIMIT, $offset);
       if($data)
       {
          foreach($data as $d)
-            $entidadlist[] = new recogida_empresa($d);
+            $entidadlist[] = new registro_vfu($d);
       }
       
       return $entidadlist;        
    }  
    
-   public function lastvalue(){
+   public function nextvalue(){
 
         $data = $this->db->select("SELECT MAX(vfu_id) AS id FROM vfu");
         

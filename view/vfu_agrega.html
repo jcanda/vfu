@@ -6,12 +6,12 @@
    });
 </script>
 
-<form name="f_nuevo_vfu" action="{$fsc->url()}&opcion=nuevovfu&codproveedor={$fsc->resultado->codproveedor}" method="post" class="form">
+<form name="f_nuevo_vfu" action="{$fsc->url()}&opcion=nuevovfu&codtitular_vfu={$fsc->resultado->codtitular_vfu}" method="post" class="form">
    <div class="container-fluid hidden-print" style="margin-top: 10px; margin-bottom: 10px;">
       <div class="row">
          <div class="col-md-12">
             <h3>
-               Nueva BAJA Vehiculo para el proveedor <a href="{$fsc->resultado->url()}">{$fsc->resultado->nombre}</a>
+               Nueva BAJA Vehiculo para el titular <a href="{$fsc->url()}&codtitular_vfu={$fsc->resultado->codtitular_vfu}">{$fsc->resultado->nombre_titular}</a>
             </h3>
          </div>
       </div>       
@@ -151,7 +151,7 @@
                      <div class="form-group">
                          <span class="glyphicon glyphicon-tasks"></span>
                         N certificado:
-                        <input class="form-control" type="text" name="ncertificado" value="{$fsc->resultado->lastvalue()}"/>
+                        <input class="form-control" type="text" name="ncertificado" value="{$fsc->resultado->nextvalue()}"/>
                      </div>
                   </div>                   
                </div>
@@ -217,21 +217,21 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             Titular:
-                            <input class="form-control" type="text" name="nombre_proveedor" value="{$fsc->resultado->nombre_proveedor}" />
+                            <input class="form-control" type="text" name="nombre" value="{$fsc->resultado->nombre_titular}" />
                         </div>
                     </div>                
                     <div class="col-md-3">
                         <div class="form-group">
                             NIF/CIF:
-                            <input class="form-control" type="text" name="cifnif" value="{$fsc->resultado->cifnif_proveedor}" />
+                            <input class="form-control" type="text" name="cifnif" value="{$fsc->resultado->cifnif_titular}" />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            Provincia:
-                            <input class="form-control" type="text" name="provincia" value="{$fsc->resultado->provincia}" />
+                            Ciudad:
+                            <input class="form-control" type="text" name="ciudad" value="{$fsc->resultado->ciudad}"/>
                         </div>
-                    </div> 
+                    </div>  
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -248,16 +248,16 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            Ciudad:
-                            <input class="form-control" type="text" name="ciudad" value="{$fsc->resultado->ciudad}"/>
+                            Teléfono:
+                            <input class="form-control" type="text" name="telefono1" value="{$fsc->resultado->telefono1_titular}" />
                         </div>
-                    </div>                    
+                    </div>                     
                 </div>
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            Teléfono1:
-                            <input class="form-control" type="text" name="telefono1" value="{$fsc->resultado->telefono1_proveedor}" />
+                            Email:
+                            <input class="form-control" type="text" name="email" value="{$fsc->resultado->email}" />
                         </div>
                     </div> 
 

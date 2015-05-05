@@ -82,8 +82,8 @@
         <nulo>YES</nulo>
     </columna>
     <columna>
-        <nombre>codproveedor</nombre>
-        <tipo>varchar(6)</tipo>
+        <nombre>codtitular_vfu</nombre>
+        <tipo>int(11)</tipo>
         <nulo>NO</nulo>
     </columna>
     <columna>

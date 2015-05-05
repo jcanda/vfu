@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : vfu_titulares.xml
+    Description:
+        Estructura de la tabla vfu_titulares.
+-->
+<tabla>
+    <columna>
+        <nombre>codtitular_vfu</nombre>
+        <tipo>serial</tipo>
+        <nulo>NO</nulo>
+        <defecto>nextval('vfu_titulares_codtitular_vfu_seq'::regclass)</defecto>
+    </columna>
+    <columna>
+        <nombre>cifnif</nombre>
+        <tipo>varchar(20)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>nombre</nombre>
+        <tipo>varchar(100)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>direccion</nombre>
+        <tipo>varchar(100)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>codpostal</nombre>
+        <tipo>varchar(10)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>ciudad</nombre>
+        <tipo>varchar(100)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>telefono1</nombre>
+        <tipo>varchar(30)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>email</nombre>
+        <tipo>varchar(100)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <restriccion>
+        <nombre>vfu_titulares_pkey</nombre>
+        <consulta>PRIMARY KEY (codtitular_vfu)</consulta>
+    </restriccion>
+</tabla>
