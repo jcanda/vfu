@@ -193,10 +193,12 @@ class vfu_ficha extends fs_controller {
         // edita un titular tanto en la edicion como en nuevo de un VFU nuevo
         //----------------------------------------------        
         if ($titular) {
-            $titular->nombre = $_POST['nombre'];
+            if(isset($_POST['nombre']))
+                $titular->nombre = $_POST['nombre'];
             $titular->email = $_POST['email'];
             $titular->telefono1 = $_POST['telefono1'];
-            $titular->cifnif = $_POST['cifnif'];
+            if(isset($_POST['cifnif']))
+                $titular->cifnif = $_POST['cifnif'];
             $titular->direccion = $_POST['direccion'];
             $titular->codpostal = $_POST['codpostal'];
             $titular->ciudad = $_POST['ciudad'];
@@ -302,7 +304,9 @@ class vfu_ficha extends fs_controller {
             $this->resultado->documentacion = $_POST['documentacion'];
             $this->resultado->instock = isset($_POST['instock']);
             $this->resultado->observaciones_vfu = $_POST['observaciones_vfu'];
-            $this->resultado->ncertificado = $_GET['id'];
+            if(isset($_POST['ncertificado']))
+                $this->resultado->ncertificado = $_POST['ncertificado'];
+
             $this->resultado->baja_nos = isset($_POST['baja_nos']);
 
             if ($this->resultado->save()) {

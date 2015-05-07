@@ -49,7 +49,7 @@
             <h2 style="margin-bottom: 0px;">
                <a href="{$fsc->url()}">VFU</a> /
                <a href="{$fsc->url()}&codtitular_vfu={$fsc->resultado->codtitular_vfu}">{$fsc->resultado->nombre_titular}</a> /
-               {$fsc->resultado->vfu_id}
+               {$fsc->resultado->ncertificado}
             </h2>
             <p>Fecha entrada: {$fsc->resultado->f_entrada}</p>
          </div>
@@ -188,7 +188,7 @@
                      <div class="form-group">
                          <span class="glyphicon glyphicon-tasks"></span>
                         N certificado:
-                        <input class="form-control" type="text" name="ncertificado" value="{$fsc->resultado->ncertificado}" disabled="disabled"/>
+                        <input class="form-control" type="text" name="ncertificado" value="{$fsc->resultado->ncertificado}" disabled="disabled" />
                      </div>
                   </div>                   
                </div>
@@ -253,13 +253,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             Titular:
-                            <input class="form-control" type="text" name="nombre" value="{$fsc->resultado->nombre_titular}" />
+                            <input class="form-control" type="text" name="nombre" value="{$fsc->resultado->nombre_titular}" disabled="disabled" />
                         </div>
                     </div>                
                     <div class="col-md-3">
                         <div class="form-group">
                             NIF/CIF:
-                            <input class="form-control" type="text" name="cifnif" value="{$fsc->resultado->cifnif_titular}" />
+                            <input class="form-control" type="text" name="cifnif" value="{$fsc->resultado->cifnif_titular}" disabled="disabled"/>
                         </div>
                     </div>
                     <div class="col-md-3">

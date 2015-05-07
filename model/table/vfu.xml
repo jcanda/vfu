@@ -118,8 +118,8 @@
     </columna>
     <columna>
         <nombre>ncertificado</nombre>
-        <tipo>varchar(20)</tipo>
-        <nulo>YES</nulo>
+        <tipo>int(11)</tipo>
+        <nulo>NO</nulo>
     </columna>
     <columna>
         <nombre>baja_nos</nombre>

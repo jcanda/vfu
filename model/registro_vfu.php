@@ -80,7 +80,7 @@ class registro_vfu extends fs_model
          $this->documentacion = intval($s['documentacion']); 
          $this->instock = $this->str2bool($s['instock']);
          $this->observaciones_vfu = $this->no_html($s['observaciones_vfu']);
-         $this->ncertificado = $s['ncertificado'];
+         $this->ncertificado = intval($s['ncertificado']);
          $this->baja_nos = $this->str2bool($s['baja_nos']);
          
          $this->nombre_titular = $s['nombre'];
@@ -115,7 +115,7 @@ class registro_vfu extends fs_model
          $this->documentacion = 0;    
          $this->instock =  1;
          $this->observaciones_vfu = '';
-         $this->ncertificado = '';
+         $this->ncertificado = 0;
          $this->baja_nos = 1;
       
          $this->nombre_titular = '';
@@ -424,7 +424,7 @@ class registro_vfu extends fs_model
    
    public function nextvalue(){
 
-        $data = $this->db->select("SELECT MAX(vfu_id) AS id FROM vfu");
+        $data = $this->db->select("SELECT MAX(ncertificado) AS id FROM vfu");
         
         if ($data)
             return ($data[0]['id'])+1;
