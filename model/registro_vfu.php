@@ -390,12 +390,12 @@ class registro_vfu extends fs_model
       
       if($desde != '')
       {
-         $sql .= " AND vfu.f_entrada >= ".$this->var2str($desde);
+         $sql .= " AND vfu.f_baja >= ".$this->var2str($desde);
       }
       
       if($hasta != '')
       {
-         $sql .= " AND vfu.f_entrada <= ".$this->var2str($hasta);
+         $sql .= " AND vfu.f_baja <= ".$this->var2str($hasta);
       }      
       
       //Segundo compruebo el parametro para filtrar

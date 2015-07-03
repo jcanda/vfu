@@ -84,7 +84,7 @@
    <table class="table table-hover" id="myTable">
       <thead>
          <tr>
-            <th class="text-left">Fecha</th>
+            <th class="text-left">F.Baja</th>
             <th class="text-left"><a href="#">Nº</a></th>
             <th class="text-left">Tipo</th>
             <th class="text-left">Matrícula</th>            
@@ -99,7 +99,7 @@
       </thead>
       {loop="fsc->resultado"}
       <tr class="clickableRow{if condition="$value->documentacion==1"} bg-success {elseif condition="$value->documentacion==3"} bg-danger {else} bg-warning {/if}" href="{$value->url()}">
-         <td>{$value->f_entrada}</td>
+         <td>{$value->f_baja}</td>
          <td><b>{$value->ncertificado}</b></td>         
          <td>{$value->nombre_tipo()}</td> 
          <td><b>{$value->matricula}</b></td>         
